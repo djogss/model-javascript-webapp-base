@@ -1,7 +1,7 @@
 console.log('Hello World!');
 import expect, { createSpy, spyOn, isSpy } from 'expect'
 import deepFreeze from 'deep-freeze'
-import { createStore } from 'redux'
+import { createStore, combineReducers } from 'redux'
 
 // import {ReactDOM} from 'react-dom'
 import React from 'react'
@@ -76,6 +76,7 @@ const todo = (state, action) => {
             };
     }
 }
+
 
 const todoApp = (state = {}, action) => {
     // debugger
@@ -204,7 +205,11 @@ const testToggleTodo = () => {
 // testToggleTodo();
 console.log("test completed successfully")
 
-const todoStore = createStore(todoApp);
+const todoAppCombined = combineReducers({
+    todos,
+    visabilitFilter
+})
+const todoStore = createStore(todoAppCombined);
 
 console.log("Initial state")
 console.log(todoStore.getState())
@@ -225,7 +230,7 @@ console.log(todoStore.getState())
 console.log("---------------")
 
 console.log("Dispatching ADD_TODO 3")
-todoStore.dispatch({ type: 'SET_VISABILITY_FILTER' })
+todoStore.dispatch({ type: 'SET_VISABILITY_FILTER', filter:'SHOW_COMPLETED' })
 
 console.log("Current state 3")
 console.log(todoStore.getState())
