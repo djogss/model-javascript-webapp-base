@@ -57,10 +57,6 @@ store.subscribe(render);
 store.subscribe(printConsole);
 render();
 
-// document.addEventListener('click', () => {
-//     store.dispatch({ type: 'INC' });
-// });
-
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -81,7 +77,30 @@ const todo = (state, action) => {
     }
 }
 
+const todoApp = (state = {}, action) => {
+    // debugger
+    return {
+        todoArray: todos(
+            state.todoArray, 
+            action
+        ),
+        visabilitFilter: visabilitFilter(
+            state.visabilitFilter, 
+            action
+        )
+    }
+}
+const visabilitFilter = (state = 'SHOW_ALL', action) => {
+    console.log("visability filter reducer", action.type);
+    switch (action.type) {
+        case 'SET_VISABILITY_FILTER':
+            return action.filter;
+        default: return state;
+    }
+}
+
 const todos = (state = [], action) => {
+    console.log("todo reducer", action.type);
     switch (action.type) {
         case 'ADD_TODO':
             return [...state,
@@ -92,6 +111,27 @@ const todos = (state = [], action) => {
             defaut:
             return state;
         default: return state;
+    }
+}
+
+
+const testVisabilityFilter = () => {
+    const stateBefore = [
+        {
+            id: 1,
+            text: 'Todo one',
+            completed: false,
+        },
+        {
+            id: 2,
+            text: 'Todo two',
+            completed: true
+        }
+    ];
+
+    const action = {
+        type: 'SET_VISABILITY_FILTER',
+        filter: 'SHOW_COMPLETED'
     }
 }
 
@@ -160,6 +200,33 @@ const testToggleTodo = () => {
 
 }
 
-testAddTodo();
-testToggleTodo();
+// testAddTodo();
+// testToggleTodo();
 console.log("test completed successfully")
+
+const todoStore = createStore(todoApp);
+
+console.log("Initial state")
+console.log(todoStore.getState())
+
+console.log("Dispatching ADD_TODO")
+todoStore.dispatch({ type: 'ADD_TODO', id: 1, text: 'First item' })
+
+console.log("Current state")
+console.log(todoStore.getState())
+console.log("---------------")
+
+
+console.log("Dispatching ADD_TODO 2")
+todoStore.dispatch({ type: 'ADD_TODO', id: 1, text: 'First item2' })
+
+console.log("Current state 2")
+console.log(todoStore.getState())
+console.log("---------------")
+
+console.log("Dispatching ADD_TODO 3")
+todoStore.dispatch({ type: 'SET_VISABILITY_FILTER' })
+
+console.log("Current state 3")
+console.log(todoStore.getState())
+console.log("---------------")
