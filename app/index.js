@@ -1,5 +1,6 @@
 console.log('Hello World!');
 import expect, { createSpy, spyOn, isSpy } from 'expect'
+import deepFreeze from 'deep-freeze'
 import { createStore } from 'redux'
 
 // import {ReactDOM} from 'react-dom'
@@ -42,9 +43,9 @@ const Counter = ({ value, onDec, onInc }) => (
 const render = () => {
     ReactDOM.render(
         <Counter value={store.getState()}
-        onDec={() => store.dispatch({type:'DEC'})}
-        onInc={() => store.dispatch({type:'INC'})}
-         />,
+            onDec={() => store.dispatch({ type: 'DEC' })}
+            onInc={() => store.dispatch({ type: 'INC' })}
+        />,
         document.getElementById('container')
     )
 }
@@ -59,3 +60,98 @@ render();
 // document.addEventListener('click', () => {
 //     store.dispatch({ type: 'INC' });
 // });
+
+
+const todos = (state = [], action) => {
+    switch (action.type) {
+        case 'ADD_TODO':
+            return [...state,
+            {
+                id: action.id,
+                text: action.text,
+                completed: false
+            }
+            ];
+        case 'TOGGLE_TODO':
+            return state.map(todo => {
+                if (todo.id !== action.id) {
+                    return todo
+                }
+                return {
+                    ...todo,
+                    completed: !todo.completed
+                };
+            });
+            defaut:
+            return state;
+    }
+}
+
+const testAddTodo = () => {
+    const stateBefore = [];
+    const action = {
+        type: 'ADD_TODO',
+        id: 1,
+        text: 'Todo one'
+    };
+    const stateAfter = [
+        {
+            id: 1,
+            text: 'Todo one',
+            completed: false
+        }
+    ];
+
+
+    deepFreeze(stateBefore)
+    deepFreeze(stateAfter)
+
+
+    expect(
+        todos(stateBefore, action)
+    ).toEqual(stateAfter);
+}
+
+const testToggleTodo = () => {
+
+    const action = {
+        type: 'TOGGLE_TODO',
+        id: 1
+    }
+    const stateBefore = [
+        {
+            id: 1,
+            text: 'Todo one',
+            completed: false
+        },
+        {
+            id: 2,
+            text: 'Todo two',
+            completed: false
+        }
+    ]
+    const stateAfter = [
+        {
+            id: 1,
+            text: 'Todo one',
+            completed: true
+        },
+        {
+            id: 2,
+            text: 'Todo two',
+            completed: false
+        }
+    ]
+
+    deepFreeze(stateBefore)
+    deepFreeze(stateBefore)
+
+    expect(
+        todos(stateBefore, action)
+    ).toEqual(stateAfter)
+
+}
+
+testAddTodo();
+testToggleTodo();
+console.log("test completed successfully")
