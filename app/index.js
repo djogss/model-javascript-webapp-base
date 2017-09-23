@@ -239,9 +239,14 @@ class TodoApp extends React.Component {
     render() {
         console.log('THE STATE', this.props)
 
+        const {
+            todos,
+            visabilitFilter
+        } = this.props;
+        
         const visibleTodos = getVisibleTodos(
-            this.props.todos,
-            this.props.visabilitFilter
+            todos,
+            visabilitFilter
         )
         console.log("visible todos ", visibleTodos);
         return (<div>
@@ -265,21 +270,21 @@ class TodoApp extends React.Component {
             {' '}
                 <FilterLink
                     filter='SHOW_ALL'
-                    currentFilter={this.props.visabilitFilter}
+                    currentFilter={visabilitFilter}
                     >
                     All
             </FilterLink>
                 {' '}
                 <FilterLink
                     filter='SHOW_ACTIVE'
-                    currentFilter={this.props.visabilitFilter}
+                    currentFilter={visabilitFilter}
                     >
                     Active
             </FilterLink>
                 {' '}
                 <FilterLink
                     filter='SHOW_COMPLETED'
-                    currentFilter={this.props.visabilitFilter}
+                    currentFilter={visabilitFilter}
                     >
                     Completed
             </FilterLink>
