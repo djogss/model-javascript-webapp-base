@@ -7,56 +7,7 @@ import { createStore, combineReducers } from 'redux'
 import React from 'react'
 import ReactDOM from 'react-dom';
 
-const counter = (state = 0, action) => {
-    switch (action.type) {
-        case 'INC': return state + 1;
-        case 'DEC': return state - 1;
-        default: return state;
-    }
-}
-
-expect(counter(1, { type: 'INC' })).toEqual(2)
-
-expect(counter(1, { type: 'DEC' })).toEqual(0)
-
-expect(counter(1, { type: 'UNKNOWN' })).toEqual(1)
-
-expect(counter(undefined, {})).toEqual(0)
-
-console.log("All tests success")
-
-console.log("test success")
-
-const store = createStore(counter);
-
-console.log(store.getState());
-
-const Counter = ({ value, onDec, onInc }) => (
-    <div>
-        <h1>{value}</h1>
-        <button onClick={onDec}>-</button>
-        <button onClick={onInc}>+</button>
-    </div>
-);
-
-
-const render = () => {
-    ReactDOM.render(
-        <Counter value={store.getState()}
-            onDec={() => store.dispatch({ type: 'DEC' })}
-            onInc={() => store.dispatch({ type: 'INC' })}
-        />,
-        document.getElementById('container')
-    )
-}
-
-const printConsole = () => {
-    console.log(store.getState())
-}
-store.subscribe(render);
-store.subscribe(printConsole);
-render();
-
+// import Todo from './components/Todo'
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -81,12 +32,12 @@ const todo = (state, action) => {
 const todoApp = (state = {}, action) => {
     // debugger
     return {
-        todoArray: todos(
-            state.todoArray, 
+        todos: todos(
+            state.todoArray,
             action
         ),
         visabilitFilter: visabilitFilter(
-            state.visabilitFilter, 
+            state.visabilitFilter,
             action
         )
     }
@@ -211,27 +162,48 @@ const todoAppCombined = combineReducers({
 })
 const todoStore = createStore(todoAppCombined);
 
-console.log("Initial state")
-console.log(todoStore.getState())
 
-console.log("Dispatching ADD_TODO")
-todoStore.dispatch({ type: 'ADD_TODO', id: 1, text: 'First item' })
+let todoCounter = 0;
+class TodoApp extends React.Component {
 
-console.log("Current state")
-console.log(todoStore.getState())
-console.log("---------------")
+    render() {
+        return (<div>
+            <input ref={node =>{
+                this.input = node;
+            }}
+            />
+            <button onClick={() => {
+                todoStore.dispatch({
+                    type: 'ADD_TODO',
+                    text: this.input.value,
+                    id: todoCounter++
+                });
+                this.input.value = '';
+                }}>
+                AddTodo
+                </button>
+            <ul>
+                {console.log("props", this.props)}
+                {this.props.todos.map(todo =>
+                    <li key={todo.id}>
+                        {todo.text}
+                    </li>
+                )}
+            </ul>
+        </div>
+        );
+    }
+}
 
+const render = () => {
+    ReactDOM.render(
+        <div>
+            <TodoApp todos={todoStore.getState().todos} />
+        </div>,
+        document.getElementById('container')
+    )
+}
+todoStore.subscribe(render)
+render();
 
-console.log("Dispatching ADD_TODO 2")
-todoStore.dispatch({ type: 'ADD_TODO', id: 1, text: 'First item2' })
-
-console.log("Current state 2")
-console.log(todoStore.getState())
-console.log("---------------")
-
-console.log("Dispatching ADD_TODO 3")
-todoStore.dispatch({ type: 'SET_VISABILITY_FILTER', filter:'SHOW_COMPLETED' })
-
-console.log("Current state 3")
-console.log(todoStore.getState())
-console.log("---------------")
+console.log("state", todoStore.getState())
