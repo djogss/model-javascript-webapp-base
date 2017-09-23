@@ -207,6 +207,12 @@ const todoStore = createStore(todoAppCombined);
 //     }
 // }
 
+// Functional component example
+// const TodoList = ({ todos, onTodoClick }) => (
+// {todos.map(todo => onTodoClick(todo.id)} /> )}
+// );
+
+
 const FilterLink = ({
     filter,
     currentFilter,
@@ -228,28 +234,68 @@ const FilterLink = ({
                 })
             }}
         >
-        {children}
+            {children}
         </a>
     );
 }
 
+
+const TodoC = ({
+onClick,
+    completed,
+    text
+}) => (
+        <li
+            onClick={onClick}
+            style={{
+                textDecoration:
+                completed ?
+                    'line-through' :
+                    'none'
+            }}>
+            {text}
+        </li>
+    );
+
+const TodoList = ({
+    todos,
+    onTodoClick
+}) => (
+        <ul>
+            {todos.map(t =>
+                <TodoC
+                    key={t.id}
+                    {...t}
+                    onClick={() => onTodoClick(t.id)}
+
+                />
+            )}
+        </ul>
+    );
+
+const SimpleTitle = ({
+    title
+}) => (
+        <h2>{title}</h2>
+    );
 let todoCounter = 0;
 class TodoApp extends React.Component {
 
     render() {
         console.log('THE STATE', this.props)
-
+        // debugger
         const {
             todos,
             visabilitFilter
         } = this.props;
-        
+
         const visibleTodos = getVisibleTodos(
             todos,
             visabilitFilter
         )
         console.log("visible todos ", visibleTodos);
         return (<div>
+            <SimpleTitle title='this is the ToDo app' />
             <input ref={node => {
                 this.input = node;
             }}
@@ -271,45 +317,33 @@ class TodoApp extends React.Component {
                 <FilterLink
                     filter='SHOW_ALL'
                     currentFilter={visabilitFilter}
-                    >
+                >
                     All
             </FilterLink>
                 {' '}
                 <FilterLink
                     filter='SHOW_ACTIVE'
                     currentFilter={visabilitFilter}
-                    >
+                >
                     Active
             </FilterLink>
                 {' '}
                 <FilterLink
                     filter='SHOW_COMPLETED'
                     currentFilter={visabilitFilter}
-                    >
+                >
                     Completed
             </FilterLink>
             </p>
-            <ul>
                 {console.log("props", this.props)}
-                {visibleTodos.map(todo =>
-                    <li key={todo.id}
-                        onClick={() => {
-                            todoStore.dispatch({
-                                type: 'TOGGLE_TODO',
-                                id: todo.id
-                            });
-                        }}
-
-                        style={{
-                            textDecoration:
-                            todo.completed ?
-                                'line-through' :
-                                'none'
-                        }}>
-                        {todo.text}
-                    </li>
-                )}
-            </ul>
+                <TodoList todos={visibleTodos}
+                    onTodoClick={id =>{
+                        todoStore.dispatch({
+                            type:'TOGGLE_TODO',
+                            id
+                        })
+                    }}
+                />
         </div>
         );
     }
