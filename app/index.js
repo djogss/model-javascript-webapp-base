@@ -330,22 +330,11 @@ onAddTodoClick
 }
 
 let todoCounter = 0;
-class TodoApp extends React.Component {
-
-    render() {
-        console.log('THE STATE', this.props)
-        // debugger
-        const {
-            todos,
-            visabilitFilter
-        } = this.props;
-
-        const visibleTodos = getVisibleTodos(
-            todos,
-            visabilitFilter
-        )
-        console.log("visible todos ", visibleTodos);
-        return (<div>
+const TodoApp = ({
+    todos,
+    visabilitFilter
+}) => (
+        <div>
             <SimpleTitle title='this is the ToDo app' />
 
             <AddTodo
@@ -368,7 +357,10 @@ class TodoApp extends React.Component {
                 }
                 }
             />
-            <TodoList todos={visibleTodos}
+            <TodoList todos={getVisibleTodos(
+                todos,
+                visabilitFilter
+            )}
                 onTodoClick={id => {
                     todoStore.dispatch({
                         type: 'TOGGLE_TODO',
@@ -377,9 +369,7 @@ class TodoApp extends React.Component {
                 }}
             />
         </div>
-        );
-    }
-}
+    )
 
 const render = () => {
     ReactDOM.render(
