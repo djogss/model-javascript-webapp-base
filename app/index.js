@@ -213,14 +213,8 @@ const todoStore = createStore(todoAppCombined);
 // );
 
 
-const FilterLink = ({
-    filter,
-    currentFilter,
-    children,
-    onFilterClick
-}) => {
-    console.log("current filter ", currentFilter)
-    console.log("filter ", filter)
+const FilterLink = ({ filter, currentFilter, children, onFilterClick }) => {
+
     if (currentFilter === filter) {
         return <span>{children}</span>
     }
@@ -236,84 +230,70 @@ const FilterLink = ({
     );
 }
 
-const FilterMenu = ({
-    visabilitFilter,
-    onFilterClick
-}) => (
-        <div>
-            <p>
-                Show:
+const FilterMenu = ({ visabilitFilter, onFilterClick }) => (
+    <div>
+        <p>
+            Show:
+        {' '}
+            <FilterLink
+                filter='SHOW_ALL'
+                currentFilter={visabilitFilter}
+                onFilterClick={onFilterClick}
+            >
+                All
+        </FilterLink>
             {' '}
-                <FilterLink
-                    filter='SHOW_ALL'
-                    currentFilter={visabilitFilter}
-                    onFilterClick={onFilterClick}
-                >
-                    All
-            </FilterLink>
-                {' '}
-                <FilterLink
-                    filter='SHOW_ACTIVE'
-                    currentFilter={visabilitFilter}
-                    onFilterClick={onFilterClick}
-                >
-                    Active
-            </FilterLink>
-                {' '}
-                <FilterLink
-                    filter='SHOW_COMPLETED'
-                    currentFilter={visabilitFilter}
-                    onFilterClick={onFilterClick}
-                >
-                    Completed
-            </FilterLink>
-            </p>
-        </div>
-    )
+            <FilterLink
+                filter='SHOW_ACTIVE'
+                currentFilter={visabilitFilter}
+                onFilterClick={onFilterClick}
+            >
+                Active
+        </FilterLink>
+            {' '}
+            <FilterLink
+                filter='SHOW_COMPLETED'
+                currentFilter={visabilitFilter}
+                onFilterClick={onFilterClick}
+            >
+                Completed
+        </FilterLink>
+        </p>
+    </div>
+);
 
 
-const TodoC = ({
-onClick,
-    completed,
-    text
-}) => (
-        <li
-            onClick={onClick}
-            style={{
-                textDecoration:
-                completed ?
-                    'line-through' :
-                    'none'
-            }}>
-            {text}
-        </li>
-    );
+const TodoC = ({ onClick, completed, text }) => (
+    <li
+        onClick={onClick}
+        style={{
+            textDecoration:
+            completed ?
+                'line-through' :
+                'none'
+        }}>
+        {text}
+    </li>
+);
 
-const TodoList = ({
-    todos,
-    onTodoClick
-}) => (
-        <ul>
-            {todos.map(t =>
-                <TodoC
-                    key={t.id}
-                    {...t}
-                    onClick={() => onTodoClick(t.id)}
+const TodoList = ({ todos, onTodoClick }) => (
+    <ul>
+        {todos.map(t =>
+            <TodoC
+                key={t.id}
+                {...t}
+                onClick={() => onTodoClick(t.id)}
 
-                />
-            )}
-        </ul>
-    );
+            />
+        )}
+    </ul>
+);
 
-const SimpleTitle = ({
-    title
-}) => (
-        <h2>{title}</h2>
-    );
+const SimpleTitle = ({ title }) => (
+    <h2>{title}</h2>
+);
 
-const AddTodo = ({
-onAddTodoClick
-}) => {
+const AddTodo = ({ onAddTodoClick }) => {
     let input;
     return <div>
         <input ref={node => {
@@ -330,46 +310,43 @@ onAddTodoClick
 }
 
 let todoCounter = 0;
-const TodoApp = ({
-    todos,
-    visabilitFilter
-}) => (
-        <div>
-            <SimpleTitle title='this is the ToDo app' />
+const TodoApp = ({ todos, visabilitFilter }) => (
+    <div>
+        <SimpleTitle title='this is the ToDo app' />
 
-            <AddTodo
-                onAddTodoClick={(text) => {
-                    todoStore.dispatch({
-                        type: 'ADD_TODO',
-                        text: text,
-                        id: todoCounter++
-                    });
+        <AddTodo
+            onAddTodoClick={(text) => {
+                todoStore.dispatch({
+                    type: 'ADD_TODO',
+                    text: text,
+                    id: todoCounter++
+                });
 
-                }}
-            />
-            <FilterMenu
-                visabilitFilter={visabilitFilter}
-                onFilterClick={filter => {
-                    todoStore.dispatch({
-                        type: 'SET_VISABILITY_FILTER',
-                        filter
-                    })
-                }
-                }
-            />
-            <TodoList todos={getVisibleTodos(
-                todos,
-                visabilitFilter
-            )}
-                onTodoClick={id => {
-                    todoStore.dispatch({
-                        type: 'TOGGLE_TODO',
-                        id
-                    })
-                }}
-            />
-        </div>
-    )
+            }}
+        />
+        <FilterMenu
+            visabilitFilter={visabilitFilter}
+            onFilterClick={filter => {
+                todoStore.dispatch({
+                    type: 'SET_VISABILITY_FILTER',
+                    filter
+                })
+            }
+            }
+        />
+        <TodoList todos={getVisibleTodos(
+            todos,
+            visabilitFilter
+        )}
+            onTodoClick={id => {
+                todoStore.dispatch({
+                    type: 'TOGGLE_TODO',
+                    id
+                })
+            }}
+        />
+    </div>
+)
 
 const render = () => {
     ReactDOM.render(
