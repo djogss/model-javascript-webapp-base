@@ -255,6 +255,7 @@ class VisibleTodos extends React.Component {
     render() {
 
         const props = this.props;
+        // ES6 destruction syntax
         const {todoStore} = this.props;
         let state = todoStore.getState();
         return (
