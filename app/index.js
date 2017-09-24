@@ -213,7 +213,7 @@ const todoStore = createStore(todoAppCombined);
 // );
 
 
-// Container - provides behaviour 
+// Container - provides behaviour connects component with todostore
 class FilterLink extends React.Component {
 
     componentDidMount() {
@@ -227,8 +227,9 @@ class FilterLink extends React.Component {
 
     render() {
 
-        let state = todoStore.getState();
         const props = this.props;
+        let state = todoStore.getState();
+        
         return (
             <Link
                 active={props.filter === state.visabilitFilter}
@@ -243,6 +244,40 @@ class FilterLink extends React.Component {
                 {props.children}
             </Link>
         );
+    }
+}
+
+// Container - provides behaviour connects component with todostore
+
+class VisibleTodos extends React.Component{
+
+    componentDidMount() {
+        this.unsusbcribe = todoStore.subscribe(() =>
+            this.forceUpdate)
+    }
+
+    componentWillUnmount() {
+        this.unsusbcribe
+    }
+
+
+    render(){
+
+        const props = this.props;
+        let state = todoStore.getState();
+        return(
+            <TodoList todos={getVisibleTodos(
+                state.todos,
+                state.visabilitFilter
+            )}
+                onTodoClick={id => {
+                    todoStore.dispatch({
+                        type: 'TOGGLE_TODO',
+                        id
+                    })
+                }}
+            />
+        )
     }
 }
 
@@ -357,17 +392,7 @@ const TodoApp = ({ todos, visabilitFilter }) => (
             }}
         />
         <FilterMenu />
-        <TodoList todos={getVisibleTodos(
-            todos,
-            visabilitFilter
-        )}
-            onTodoClick={id => {
-                todoStore.dispatch({
-                    type: 'TOGGLE_TODO',
-                    id
-                })
-            }}
-        />
+        <VisibleTodos/>
     </div>
 )
 
