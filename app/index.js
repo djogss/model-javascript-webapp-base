@@ -218,7 +218,8 @@ class FilterLink extends React.Component {
 
     componentDidMount() {
         this.unsusbcribe = todoStore.subscribe(() =>
-            this.forceUpdate)
+            this.forceUpdate()
+        );
     }
 
     componentWillUnmount() {
@@ -229,7 +230,7 @@ class FilterLink extends React.Component {
 
         const props = this.props;
         let state = todoStore.getState();
-        
+
         return (
             <Link
                 active={props.filter === state.visabilitFilter}
@@ -249,23 +250,23 @@ class FilterLink extends React.Component {
 
 // Container - provides behaviour connects component with todostore
 
-class VisibleTodos extends React.Component{
+class VisibleTodos extends React.Component {
 
     componentDidMount() {
         this.unsusbcribe = todoStore.subscribe(() =>
-            this.forceUpdate)
+            this.forceUpdate()
+        );
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(){
         this.unsusbcribe
     }
-
-
-    render(){
+   
+    render() {
 
         const props = this.props;
         let state = todoStore.getState();
-        return(
+        return (
             <TodoList todos={getVisibleTodos(
                 state.todos,
                 state.visabilitFilter
@@ -360,50 +361,37 @@ const SimpleTitle = ({ title }) => (
 );
 
 // Representation layer component
-const AddTodo = ({ onAddTodoClick }) => {
+const AddTodo = () => {
     let input;
-    return <div>
-        <input ref={node => {
-            input = node;
-        }}
-        />
-        <button onClick={() => {
-            onAddTodoClick(input.value)
-            input.value = '';
-        }}>
-            AddTodo
+    return (
+        <div>
+            <input ref={node => {
+                input = node;
+            }} />
+            <button onClick={() => {
+                todoStore.dispatch({
+                    type: 'ADD_TODO',
+                    text: input.value,
+                    id: todoCounter++
+                });
+
+                input.value = '';
+            }}>
+                AddTodo
         </button>
-    </div>
+        </div>
+    )
 }
 
 let todoCounter = 0;
 const TodoApp = ({ todos, visabilitFilter }) => (
     <div>
         <SimpleTitle title='this is the ToDo app' />
-
-        <AddTodo
-            onAddTodoClick={(text) => {
-                todoStore.dispatch({
-                    type: 'ADD_TODO',
-                    text: text,
-                    id: todoCounter++
-                });
-
-            }}
-        />
+        <AddTodo />
         <FilterMenu />
-        <VisibleTodos/>
+        <VisibleTodos />
     </div>
 )
-
-const render = () => {
-    ReactDOM.render(
-        <div>
-            <TodoApp {...todoStore.getState() } />
-        </div>,
-        document.getElementById('container')
-    )
-}
 
 todoStore.dispatch({
     type: 'ADD_TODO',
@@ -420,7 +408,12 @@ todoStore.dispatch({
     id: 3,
     text: 'dummy todo 3'
 })
-todoStore.subscribe(render)
-render();
+
+ReactDOM.render(
+    <div>
+        <TodoApp />
+    </div>,
+    document.getElementById('container')
+)
 
 console.log("state", todoStore.getState())
