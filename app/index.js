@@ -216,13 +216,22 @@ const todoStore = createStore(todoAppCombined);
 
 class FilterLink extends React.Component {
 
+    componentDidMount() {
+        this.unsusbcribe = todoStore.subscribe(()=>
+    this.forceUpdate)
+    }
+    
+    componentWillUnmount(){
+        this.unsusbcribe
+    }
+
     render() {
 
         let state = todoStore.getState();
         const props = this.props;
         return (
             <Link
-              active={props.filter === state.visabilitFilter}
+                active={props.filter === state.visabilitFilter}
                 onFilterClick={() => {
                     todoStore.dispatch({
                         type: 'SET_VISABILITY_FILTER',
@@ -231,7 +240,7 @@ class FilterLink extends React.Component {
                 }
                 }
             >
-            {props.children}
+                {props.children}
             </Link>
         );
     }
