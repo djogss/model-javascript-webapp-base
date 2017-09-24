@@ -212,16 +212,16 @@ const todoStore = createStore(todoAppCombined);
 // {todos.map(todo => onTodoClick(todo.id)} /> )}
 // );
 
-// Representation layer comonent
 
+// Container - provides behaviour 
 class FilterLink extends React.Component {
 
     componentDidMount() {
-        this.unsusbcribe = todoStore.subscribe(()=>
-    this.forceUpdate)
+        this.unsusbcribe = todoStore.subscribe(() =>
+            this.forceUpdate)
     }
-    
-    componentWillUnmount(){
+
+    componentWillUnmount() {
         this.unsusbcribe
     }
 
@@ -246,6 +246,7 @@ class FilterLink extends React.Component {
     }
 }
 
+// Representation layer component
 const Link = ({ active, children, onFilterClick }) => {
 
     if (active) {
@@ -263,7 +264,7 @@ const Link = ({ active, children, onFilterClick }) => {
     );
 }
 
-// Representation layer comonent
+// Representation layer component
 const FilterMenu = () => (
     <div>
         <p>
@@ -290,7 +291,7 @@ const FilterMenu = () => (
     </div>
 );
 
-// Representation layer comonent
+// Representation layer component
 const TodoC = ({ onClick, completed, text }) => (
     <li
         onClick={onClick}
@@ -304,7 +305,7 @@ const TodoC = ({ onClick, completed, text }) => (
     </li>
 );
 
-// Representation layer comonent
+// Representation layer component
 const TodoList = ({ todos, onTodoClick }) => (
     <ul>
         {todos.map(t =>
@@ -318,12 +319,12 @@ const TodoList = ({ todos, onTodoClick }) => (
     </ul>
 );
 
-// Representation layer comonent
+// Representation layer component
 const SimpleTitle = ({ title }) => (
     <h2>{title}</h2>
 );
 
-// Representation layer comonent
+// Representation layer component
 const AddTodo = ({ onAddTodoClick }) => {
     let input;
     return <div>
