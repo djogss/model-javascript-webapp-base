@@ -212,7 +212,7 @@ const todoStore = createStore(todoAppCombined);
 // {todos.map(todo => onTodoClick(todo.id)} /> )}
 // );
 
-
+// Representation layer comonent
 const FilterLink = ({ filter, currentFilter, children, onFilterClick }) => {
 
     if (currentFilter === filter) {
@@ -230,6 +230,7 @@ const FilterLink = ({ filter, currentFilter, children, onFilterClick }) => {
     );
 }
 
+// Representation layer comonent
 const FilterMenu = ({ visabilitFilter, onFilterClick }) => (
     <div>
         <p>
@@ -262,7 +263,7 @@ const FilterMenu = ({ visabilitFilter, onFilterClick }) => (
     </div>
 );
 
-
+// Representation layer comonent
 const TodoC = ({ onClick, completed, text }) => (
     <li
         onClick={onClick}
@@ -276,6 +277,7 @@ const TodoC = ({ onClick, completed, text }) => (
     </li>
 );
 
+// Representation layer comonent
 const TodoList = ({ todos, onTodoClick }) => (
     <ul>
         {todos.map(t =>
@@ -289,10 +291,12 @@ const TodoList = ({ todos, onTodoClick }) => (
     </ul>
 );
 
+// Representation layer comonent
 const SimpleTitle = ({ title }) => (
     <h2>{title}</h2>
 );
 
+// Representation layer comonent
 const AddTodo = ({ onAddTodoClick }) => {
     let input;
     return <div>
