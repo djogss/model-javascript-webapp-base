@@ -204,7 +204,7 @@ const todoAppCombined = combineReducers({
 class FilterLink extends React.Component {
 
     componentDidMount() {
-        const {todoStore} = this.props;
+        const { todoStore } = this.context;
         this.unsusbcribe = todoStore.subscribe(() =>
             this.forceUpdate()
         );
@@ -217,7 +217,7 @@ class FilterLink extends React.Component {
     render() {
 
         const props = this.props;
-        const {todoStore} = props;
+        const { todoStore } = this.context;
         let state = todoStore.getState();
 
         return (
@@ -236,27 +236,31 @@ class FilterLink extends React.Component {
         );
     }
 }
+FilterLink.contextTypes = {
+    todoStore: React.PropTypes.object
+};
+
 
 // Container - provides behaviour connects component with todostore
 
 class VisibleTodos extends React.Component {
 
     componentDidMount() {
-        const {todoStore} = this.props;
+        const { todoStore } = this.context;
         this.unsusbcribe = todoStore.subscribe(() =>
             this.forceUpdate()
         );
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.unsusbcribe
     }
-   
+
     render() {
 
         const props = this.props;
         // ES6 destruction syntax
-        const {todoStore} = this.props;
+        const { todoStore } = this.context;
         let state = todoStore.getState();
         return (
             <TodoList todos={getVisibleTodos(
@@ -273,6 +277,10 @@ class VisibleTodos extends React.Component {
         )
     }
 }
+
+VisibleTodos.contextTypes = {
+    todoStore: React.PropTypes.object
+};
 
 // Representation layer component
 const Link = ({ active, children, onFilterClick }) => {
@@ -293,28 +301,25 @@ const Link = ({ active, children, onFilterClick }) => {
 }
 
 // Representation layer component
-const FilterMenu = ({todoStore}) => (
+const FilterMenu = () => (
     <div>
         <p>
             Show:
         {' '}
             <FilterLink
                 filter='SHOW_ALL'
-                todoStore={todoStore}
             >
                 All
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_ACTIVE'
-                todoStore={todoStore}
             >
                 Active
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_COMPLETED'
-                todoStore={todoStore}
             >
                 Completed
         </FilterLink>
@@ -356,7 +361,9 @@ const SimpleTitle = ({ title }) => (
 );
 
 // Representation layer component
-const AddTodo = ({todoStore}) => {
+// First parameter is always props, and the second is context
+// Second parameter using destructive feature to extract todoStore
+const AddTodo = (props, { todoStore }) => {
     let input;
     return (
         <div>
@@ -377,21 +384,39 @@ const AddTodo = ({todoStore}) => {
         </div>
     )
 }
+AddTodo.contextTypes = {
+    todoStore: React.PropTypes.object
+};
+
 
 let todoCounter = 0;
 const TodoApp = ({ todoStore }) => (
     <div>
         <SimpleTitle title='this is the ToDo app' />
-        <AddTodo todoStore={todoStore} />
-        <FilterMenu todoStore={todoStore}/>
-        <VisibleTodos todoStore={todoStore} />
+        <AddTodo />
+        <FilterMenu />
+        <VisibleTodos />
     </div>
 )
 
+class Provider extends React.Component {
+    getChildContext() {
+        return {
+            todoStore: this.props.todoStore
+        };
+    }
+    render() {
+        return this.props.children;
+    }
+}
+
+Provider.childContextTypes = {
+    todoStore: React.PropTypes.object
+};
 
 ReactDOM.render(
-    <div>
-        <TodoApp todoStore={createStore(todoAppCombined)}/>
-    </div>,
+    <Provider todoStore={createStore(todoAppCombined)}>
+        <TodoApp />
+    </Provider>,
     document.getElementById('container')
-)
+);
