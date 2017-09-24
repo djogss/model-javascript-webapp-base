@@ -7,8 +7,6 @@ import { createStore, combineReducers } from 'redux'
 import React from 'react'
 import ReactDOM from 'react-dom';
 
-// import Todo from './components/Todo'
-
 const todo = (state, action) => {
     switch (action.type) {
         case 'ADD_TODO':
@@ -62,16 +60,6 @@ const visabilitFilter = (state = 'SHOW_ALL', action) => {
     switch (action.type) {
         case 'SET_VISABILITY_FILTER':
             return action.filter;
-        // case 'SHOW_ACTIVE':
-        //     return this.props.todos.map(todo => {
-        //         !todol.completed
-        //     });
-        // case 'SHOW_COMPLETED':
-        //     console.log("filtering only completed")
-        //     return this.props.todos.map(todo => {
-        //         todol.completed
-        //     });
-
         default: return state;
     }
 }
@@ -185,7 +173,6 @@ const todoAppCombined = combineReducers({
     todos,
     visabilitFilter
 })
-const todoStore = createStore(todoAppCombined);
 
 // class FilterLink extends React.Component {
 
@@ -217,6 +204,7 @@ const todoStore = createStore(todoAppCombined);
 class FilterLink extends React.Component {
 
     componentDidMount() {
+        const {todoStore} = this.props;
         this.unsusbcribe = todoStore.subscribe(() =>
             this.forceUpdate()
         );
@@ -229,6 +217,7 @@ class FilterLink extends React.Component {
     render() {
 
         const props = this.props;
+        const {todoStore} = props;
         let state = todoStore.getState();
 
         return (
@@ -253,6 +242,7 @@ class FilterLink extends React.Component {
 class VisibleTodos extends React.Component {
 
     componentDidMount() {
+        const {todoStore} = this.props;
         this.unsusbcribe = todoStore.subscribe(() =>
             this.forceUpdate()
         );
@@ -265,6 +255,7 @@ class VisibleTodos extends React.Component {
     render() {
 
         const props = this.props;
+        const {todoStore} = this.props;
         let state = todoStore.getState();
         return (
             <TodoList todos={getVisibleTodos(
@@ -301,25 +292,28 @@ const Link = ({ active, children, onFilterClick }) => {
 }
 
 // Representation layer component
-const FilterMenu = () => (
+const FilterMenu = ({todoStore}) => (
     <div>
         <p>
             Show:
         {' '}
             <FilterLink
                 filter='SHOW_ALL'
+                todoStore={todoStore}
             >
                 All
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_ACTIVE'
+                todoStore={todoStore}
             >
                 Active
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_COMPLETED'
+                todoStore={todoStore}
             >
                 Completed
         </FilterLink>
@@ -361,7 +355,7 @@ const SimpleTitle = ({ title }) => (
 );
 
 // Representation layer component
-const AddTodo = () => {
+const AddTodo = ({todoStore}) => {
     let input;
     return (
         <div>
@@ -384,36 +378,19 @@ const AddTodo = () => {
 }
 
 let todoCounter = 0;
-const TodoApp = ({ todos, visabilitFilter }) => (
+const TodoApp = ({ todoStore }) => (
     <div>
         <SimpleTitle title='this is the ToDo app' />
-        <AddTodo />
-        <FilterMenu />
-        <VisibleTodos />
+        <AddTodo todoStore={todoStore} />
+        <FilterMenu todoStore={todoStore}/>
+        <VisibleTodos todoStore={todoStore} />
     </div>
 )
 
-todoStore.dispatch({
-    type: 'ADD_TODO',
-    id: 1,
-    text: 'dummy todo'
-})
-todoStore.dispatch({
-    type: 'ADD_TODO',
-    id: 2,
-    text: 'dummy todo 2'
-})
-todoStore.dispatch({
-    type: 'ADD_TODO',
-    id: 3,
-    text: 'dummy todo 3'
-})
 
 ReactDOM.render(
     <div>
-        <TodoApp />
+        <TodoApp todoStore={createStore(todoAppCombined)}/>
     </div>,
     document.getElementById('container')
 )
-
-console.log("state", todoStore.getState())
