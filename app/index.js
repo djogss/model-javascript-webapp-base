@@ -213,16 +213,40 @@ const todoStore = createStore(todoAppCombined);
 // );
 
 // Representation layer comonent
-const FilterLink = ({ filter, currentFilter, children, onFilterClick }) => {
 
-    if (currentFilter === filter) {
+class FilterLink extends React.Component {
+
+    render() {
+
+        let state = todoStore.getState();
+        const props = this.props;
+        return (
+            <Link
+              active={props.filter === state.visabilitFilter}
+                onFilterClick={() => {
+                    todoStore.dispatch({
+                        type: 'SET_VISABILITY_FILTER',
+                        filter: props.filter
+                    })
+                }
+                }
+            >
+            {props.children}
+            </Link>
+        );
+    }
+}
+
+const Link = ({ active, children, onFilterClick }) => {
+
+    if (active) {
         return <span>{children}</span>
     }
     return (
         <a href='#'
             onClick={e => {
                 e.preventDefault();
-                onFilterClick(filter)
+                onFilterClick()
             }}
         >
             {children}
@@ -231,31 +255,25 @@ const FilterLink = ({ filter, currentFilter, children, onFilterClick }) => {
 }
 
 // Representation layer comonent
-const FilterMenu = ({ visabilitFilter, onFilterClick }) => (
+const FilterMenu = () => (
     <div>
         <p>
             Show:
         {' '}
             <FilterLink
                 filter='SHOW_ALL'
-                currentFilter={visabilitFilter}
-                onFilterClick={onFilterClick}
             >
                 All
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_ACTIVE'
-                currentFilter={visabilitFilter}
-                onFilterClick={onFilterClick}
             >
                 Active
         </FilterLink>
             {' '}
             <FilterLink
                 filter='SHOW_COMPLETED'
-                currentFilter={visabilitFilter}
-                onFilterClick={onFilterClick}
             >
                 Completed
         </FilterLink>
@@ -328,16 +346,7 @@ const TodoApp = ({ todos, visabilitFilter }) => (
 
             }}
         />
-        <FilterMenu
-            visabilitFilter={visabilitFilter}
-            onFilterClick={filter => {
-                todoStore.dispatch({
-                    type: 'SET_VISABILITY_FILTER',
-                    filter
-                })
-            }
-            }
-        />
+        <FilterMenu />
         <TodoList todos={getVisibleTodos(
             todos,
             visabilitFilter
