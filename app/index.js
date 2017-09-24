@@ -6,6 +6,7 @@ import { createStore, combineReducers } from 'redux'
 // import {ReactDOM} from 'react-dom'
 import React from 'react'
 import ReactDOM from 'react-dom';
+import {connect} from 'react-redux'
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -241,42 +242,65 @@ FilterLink.contextTypes = {
 };
 
 
-// Container - provides behaviour connects component with todostore
-
-class VisibleTodos extends React.Component {
-
-    componentDidMount() {
-        const { todoStore } = this.context;
-        this.unsusbcribe = todoStore.subscribe(() =>
-            this.forceUpdate()
-        );
-    }
-
-    componentWillUnmount() {
-        this.unsusbcribe
-    }
-
-    render() {
-
-        const props = this.props;
-        // ES6 destruction syntax
-        const { todoStore } = this.context;
-        let state = todoStore.getState();
-        return (
-            <TodoList todos={getVisibleTodos(
-                state.todos,
-                state.visabilitFilter
-            )}
-                onTodoClick={id => {
-                    todoStore.dispatch({
-                        type: 'TOGGLE_TODO',
-                        id
-                    })
-                }}
-            />
+const mapStateToProps = (state) => {
+    return {
+        todos: getVisibleTodos(
+            state.todos,
+            state.visabilitFilter
         )
-    }
-}
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onTodoClick: (id) =>{
+            dispatch({
+                type:'TOGGLE_TODO',
+                id
+            })
+        }
+    };
+};
+
+const VisibleTodos = connect(
+    mapStateToProps, mapDispatchToProps
+)(TodoList);
+
+// Container - provides behaviour connects component with todostore
+// class VisibleTodos extends React.Component {
+
+//     componentDidMount() {
+//         const { todoStore } = this.context;
+//         this.unsusbcribe = todoStore.subscribe(() =>
+//             this.forceUpdate()
+//         );
+//     }
+
+//     componentWillUnmount() {
+//         this.unsusbcribe
+//     }
+
+//     render() {
+
+//         const props = this.props;
+//         // ES6 destruction syntax
+//         const { todoStore } = this.context;
+//         let state = todoStore.getState();
+//         return (
+//             <TodoList todos={getVisibleTodos(
+//                 state.todos,
+//                 state.visabilitFilter
+//             )}
+//                 onTodoClick={id => {
+//                     todoStore.dispatch({
+//                         type: 'TOGGLE_TODO',
+//                         id
+//                     })
+//                 }}
+//             />
+//         )
+//     }
+// }
 
 VisibleTodos.contextTypes = {
     todoStore: React.PropTypes.object
